@@ -20,7 +20,7 @@ int main()
     {
         int num = stk.top();
         stk.pop();
-        while (!big.empty() && big.top() <= num)
+        while (!big.empty() && big.top() < num)
             big.pop();
         if (!big.empty() && big.top() > num)
             ret.push(big.top());
