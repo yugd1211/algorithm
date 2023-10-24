@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "utility": "cpp",
+        "algorithm": "cpp",
+        "__config": "cpp",
+        "iostream": "cpp",
+        "queue": "cpp",
+        "memory": "cpp"
+    }
+}
