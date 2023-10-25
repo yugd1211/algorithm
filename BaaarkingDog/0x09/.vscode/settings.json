@@ -5,6 +5,7 @@
         "__config": "cpp",
         "iostream": "cpp",
         "queue": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "tuple": "cpp"
     }
 }
