@@ -14,75 +14,119 @@ using namespace std;
 int N;
 int M;
 int ret = 100;
-vector<pair<int, int> >cctvs;
-int board[9][9];
 
-void dirFill(int (&board)[9][9], int dir, int x, int y)
+vector<vector <int> > gBoard(9, vector<int>(9, 0));
+vector<pair<int, int> >cctvs;
+void dirFill(vector<vector <int> > &board, int dir, int x, int y)
 {
     if (dir == LEFT)
     {
-        for (int i = y - 1; y >= 0; i--)
+        for (int i = y - 1; i >= 0; i--)
         {
             if (board[x][i] == 6)
-                break;
+                return;
+            if (board[x][i] != 0)
+                continue;;
             board[x][i] = -1;
         }
     }
     else if (dir == RIGHT)
     {
-        for (int i = y + 1; y < M; i++)
+        for (int i = y + 1; i < M; i++)
         {
             if (board[x][i] == 6)
-                break;
+                return;
+            if (board[x][i] != 0)
+                continue;
             board[x][i] = -1;
         }
     }
     else if (dir == UP)
     {
-        for (int i = x - 1; x >= 0; i--)
+        for (int i = x - 1; i >= 0; i--)
         {
             if (board[i][y] == 6)
-                break;
+                return;
+            if (board[i][y] != 0)
+                continue;
             board[i][y] = -1;
         }
     }
     else if (dir == DOWN)
     {
-        for (int i = x + 1; x < N; i++)
+        for (int i = x + 1; i < N; i++)
         {
             if (board[i][y] == 6)
-                break;
+                return;
+            if (board[i][y] != 0)
+                continue;
             board[i][y] = -1;
         }
     }
 }
 
-
-void back(int curr)
+void back(vector<vector<int> > board,int curr)
 {
-    if (curr == cctvs.size() - 1)
+    if (curr == cctvs.size())
     {
-        ret = 0;
+        int _min = 0;
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < M; j++)
+                if (board[i][j] == 0)
+                    _min++;
+        if (_min < ret)
+            ret = _min;
         return ;
     }
-    if (board[cctvs[curr].X][cctvs[curr].Y] == 1)
+    else if (board[cctvs[curr].X][cctvs[curr].Y] == 1)
     {
         for (int i = 0; i < 4; i++)
         {
+            vector<vector<int> > tmp(board);
+            dirFill(tmp, i, cctvs[curr].X, cctvs[curr].Y);
+            back(tmp, curr + 1);
         }
     }
-    // if (board[cctvs[curr].X][cctvs[curr].Y] == 2)
-    // {
-    // }
-    // if (board[cctvs[curr].X][cctvs[curr].Y] == 3)
-    // {
-    // }
-    // if (board[cctvs[curr].X][cctvs[curr].Y] == 4)
-    // {
-    // }
-    // if (board[cctvs[curr].X][cctvs[curr].Y] == 5)
-    // {
-    // }
+    else if (board[cctvs[curr].X][cctvs[curr].Y] == 2)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            vector<vector<int> > tmp(board);
+            dirFill(tmp, i, cctvs[curr].X, cctvs[curr].Y);
+            dirFill(tmp, i + 2, cctvs[curr].X, cctvs[curr].Y);
+            back(tmp, curr + 1);
+        }
+    }
+    else if (board[cctvs[curr].X][cctvs[curr].Y] == 3)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            vector<vector<int> > tmp(board);
+            dirFill(tmp, i, cctvs[curr].X, cctvs[curr].Y);
+            dirFill(tmp, (i + 1) % 4, cctvs[curr].X, cctvs[curr].Y);
+            back(tmp, curr + 1);
+        }
+    }
+    else if (board[cctvs[curr].X][cctvs[curr].Y] == 4)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            vector<vector<int> > tmp(board);
+            dirFill(tmp, i, cctvs[curr].X, cctvs[curr].Y);
+            dirFill(tmp, (i + 1) % 4, cctvs[curr].X, cctvs[curr].Y);
+            dirFill(tmp, (i + 2) % 4, cctvs[curr].X, cctvs[curr].Y);
+            back(tmp, curr + 1);
+        }
+    }
+    else if (board[cctvs[curr].X][cctvs[curr].Y] == 5)
+    {
+        vector<vector<int> > tmp(board);
+        dirFill(tmp, LEFT, cctvs[curr].X, cctvs[curr].Y);
+        dirFill(tmp, UP, cctvs[curr].X, cctvs[curr].Y);
+        dirFill(tmp, RIGHT, cctvs[curr].X, cctvs[curr].Y);
+        dirFill(tmp, DOWN, cctvs[curr].X, cctvs[curr].Y);
+        back(tmp, curr + 1);
+    }
 }
 
 
@@ -92,13 +136,13 @@ int main()
     cin >> M;
     for (int i = 0; i < N; i++)
     {
-        for (int j = 0; j < N; j++)
+        for (int j = 0; j < M; j++)
         {
-            cin >> board[i][j];
-            if (board[i][j] != 0 && board[i][j] != 6)
+            cin >> gBoard[i][j];
+            if (gBoard[i][j] != 0 && gBoard[i][j] != 6)
                 cctvs.push_back(make_pair(i, j));
         }
     }
-    back(0);
+    back(gBoard, 0);
     cout << ret;
 }
