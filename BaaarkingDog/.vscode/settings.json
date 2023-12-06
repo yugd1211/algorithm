@@ -1,5 +1,13 @@
 {
     "files.associations": {
-        "ios": "cpp"
+        "ios": "cpp",
+        "iostream": "cpp",
+        "vector": "cpp",
+        "utility": "cpp",
+        "queue": "cpp",
+        "memory": "cpp",
+        "tuple": "cpp",
+        "functional": "cpp",
+        "stack": "cpp"
     }
 }
