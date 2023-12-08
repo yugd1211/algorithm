@@ -4,6 +4,9 @@
 #include <map>
 using namespace std;
 
+// age의 최대 크기가 작기 때문에 map이 아니여도 됐다.
+// for문 자체도 map을 활용해서 사용하질 않았음 :(
+
 int N;
 map<int, vector<string>> mm;
 
