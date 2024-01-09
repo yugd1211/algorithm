@@ -5,7 +5,6 @@
 
 using namespace std;
 int board[301][301];
-int vis[301][301];
 queue<pair<int, int>> q;
 
 int N, M;
@@ -13,44 +12,69 @@ int N, M;
 int dx[4] = {1, 0, -1, 0};
 int dy[4] = {0, 1, 0, -1};
 
-void clearVis()
+void clearArr(int arr[301][301])
 {
     for (int i = 0; i < 301; i++)
         for (int j = 0; j < 301; j++)
-            vis[i][j] = 0;
+            arr[i][j] = 0;
 }
 
-void isDivide()
+void Swap(int tmp[301][301])
 {
-    int cnt = 0;
-    queue<pair<int, int>> q2;
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < M; j++)
+            board[i][j] = tmp[i][j];
+}
+
+void printBoard(int arr[301][301])
+{
+    cout << "==================\n";
     for (int i = 0; i < N; i++)
     {
-        for (int j = 0; j < N; j++)
+        for (int j = 0; j < M; j++)
+            cout << arr[i][j] << " ";
+        cout << "\n";
+    }
+}
+
+int bfs()
+{
+    int cnt = 0;
+    int tmp[301][301];
+    clearArr(tmp);
+    queue<pair<int, int>> q2;
+
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < M; j++)
         {
-            if (!board[i][j])
-                continue;
-            clearVis();
-            q2.push({i, j});
-            cnt++;
-            while (q2.empty())
+            if (board[i][j] && !tmp[i][j])
             {
-                int x, y;
-                tie(x, y) = q2.front();
-                for (int i = 0; i < 4; i++)
+                cnt++;
+                q2.push({i, j});
+                tmp[i][j] = cnt;
+                while (!q2.empty())
                 {
-                    if (x + dx[i] < 0 || x + dx[i] >= N || y + dy[i] < 0 || y + dy[i] >= M)
-                        continue;
-                    if (board[x + dx[i]][y + dy[i]] == 0)
-                        continue;
-                    if (vis[x + dx[i]][y + dy[i]])
-                        continue;
-                    q2.push({x + dx[i], y + dy[i]});
-                    vis[x + dx[i]][y + dy[i]] = cnt;
+                    int x, y;
+                    tie(x, y) = q2.front();
+                    q2.pop();
+                    for (int k = 0; k < 4; k++)
+                    {
+                        if (x + dx[k] < 0 || y + dy[k] < 0 || x < dx[k] >= N || y < dy[k] >= M)
+                            continue;
+                        if (tmp[x + dx[k]][y + dy[k]])
+                            continue;
+                        if (board[x + dx[k]][y + dy[k]])
+                        {
+                            tmp[x + dx[k]][y + dy[k]] = cnt;
+                            q2.push({x + dx[k], y + dy[k]});
+                        }
+                    }
                 }
             }
         }
     }
+    return cnt;
 }
 
 int main()
@@ -66,45 +90,40 @@ int main()
                 q.push({i, j});
         }
     }
-    while (q.empty())
+
+    while (!q.empty())
     {
-        vector<tuple<int, int, int>> vec;
         int size = q.size();
+        int tmp[301][301];
+
+        clearArr(tmp);
         for (int i = 0; i < size; i++)
         {
             int x, y;
             tie(x, y) = q.front();
-            int h = board[x][y];
             q.pop();
+            tmp[x][y] = board[x][y];
             for (int i = 0; i < 4; i++)
             {
-                if (x + dx[i] < 0 || x + dx[i] >= N || y + dy[i] < 0 || y + dy[i] >= M)
+                if (x + dx[i] < 0 || y + dy[i] < 0 || x + dx[i] >= N || y + dy[i] >= M)
                     continue;
-                if (board[x + dx[i]][y + dy[i]] == 0)
-                    --h;
+                if (tmp[x][y] <= 0)
+                    break;
+                if (!board[x + dx[i]][y + dy[i]])
+                    tmp[x][y]--;
             }
-            vec.push_back({x, y, h});
-        }
-        for (int i = 0; i < vec.size(); i++)
-        {
-            int x, y, h;
-            tie(x, y, h) = vec[i];
-            board[x][y] = h;
-            if (board[x][y])
+            if (tmp[x][y] < 0)
+                tmp[x][y] = 0;
+            if (tmp[x][y])
                 q.push({x, y});
         }
-
         ans++;
-    }
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
+        Swap(tmp);
+        if (bfs() >= 2)
         {
-            if (board[i][j])
-            {
-                cout << ans;
-            }
+            cout << ans;
+            return 0;
         }
     }
-    cout << ans;
+    cout << 0;
 }
