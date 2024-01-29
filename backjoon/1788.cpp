@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int arr[2000002];
+long long arr[2000002];
 int N;
 
 int main()
@@ -17,11 +17,24 @@ int main()
 	arr[1000001] = 1;
 	arr[1000002] = 1;
 	arr[1000003] = 2;
-	for (int i = 1000000; i >= 0; i--)
-		arr[1000000 - i] = arr[1000000 - i + 1] + arr[1000000 - i + 2];
-	for (int i = 1000003; i < 2000000; i++)
-		arr[1000000 - i] = arr[1000000 - i - 1] + arr[1000000 - i - 2];
-	
+	for (int i = 1; i < 1000001; i++)
+		arr[1000000 - i] = (arr[1000000 - i + 2] - arr[1000000 - i + 1]) % 1000000000;
+	for (int i = 1; i < 1000001; i++)
+		arr[1000000 + i] = (arr[1000000 + i - 1] + arr[1000000 + i - 2]) % 1000000000;
+
 	cin >> N;
-	cout << arr[1000000 + N];
+	if (arr[1000000 + N] > 0)
+	{
+		cout << "1\n";
+		cout << arr[1000000 + N];
+	}
+	else if (arr[1000000 + N] < 0)
+	{
+		cout << "-1\n";
+		cout << abs(arr[1000000 + N]);
+	}
+	else
+	{
+		cout << "0\n0";
+	}
 }
