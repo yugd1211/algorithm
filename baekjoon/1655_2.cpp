@@ -3,7 +3,6 @@
 #include <vector>
 #include <queue>
 using namespace std;
-
 // 문제풀이
 // 두개의 우선순위큐를 사용하는 방법이 떠오름
 // 오름차순 정렬 큐와 내림차순 정렬 큐를 사용해서
@@ -14,9 +13,35 @@ using namespace std;
 // 짝수일때는 오른차순 큐가 2개 더 많아야한다.
 
 int N;
+priority_queue<int> lq;
+priority_queue<int, vector<int>, greater<int>> rq;
 
 int main()
 {
 	cin.tie(0);
 	ios::sync_with_stdio(0);
+	cin >> N;
+	for (int i = 0; i < N; i++)
+	{
+		int n;
+		cin >> n;
+
+		if (lq.empty() || n <= lq.top())
+			lq.push(n);
+		else
+			rq.push(n);
+
+		if (lq.size() > rq.size() + 1)
+		{
+			rq.push(lq.top());
+			lq.pop();
+		}
+		else if (rq.size() > lq.size())
+		{
+			lq.push(rq.top());
+			rq.pop();
+		}
+
+		cout << lq.top() << "\n";
+	}
 }
