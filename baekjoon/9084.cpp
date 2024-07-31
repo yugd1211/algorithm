@@ -4,30 +4,35 @@
 using namespace std;
 
 int T;
+int dp[10001];
 
 int main()
 {
 	cin.tie(0);
 	ios::sync_with_stdio(0);
 
-	// T : 테스트 케이스
-	// N : 동전 수
-	// Ns : 동전들
-	// M : 만들어야 할 금액
-
 	cin >> T;
-	for (int i = 0; i < T; i++)
+	while (T--)
 	{
 		int N;
+		vector<int> coin;
+		int dest;
+
 		cin >> N;
-		vector<int> vec;
+		fill(dp, dp + 10001, 0);
+		dp[0] = 1;
 		for (int j = 0; j < N; j++)
 		{
-			int coin;
-			cin >> coin;
-			vec.push_back(coin);
+			int n;
+			cin >> n;
+			coin.push_back(n);
 		}
-		int dest;
 		cin >> dest;
+
+		for (int i = 0; i < N; i++)
+			for (int j = coin[i]; j <= dest; j++)
+				dp[j] += dp[j - coin[i]];
+
+		cout << dp[dest] << "\n";
 	}
 }
