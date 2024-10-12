@@ -1,86 +1,80 @@
 #include <string>
-#include <vector>
-#include <stack>
 #include <iostream>
 #include <algorithm>
+#include <stack>
+#include <vector>
 #include <tuple>
 #include <sstream>
 
 using namespace std;
 
-// 새 과제부터 시작
-// 진행중 새 과제가 있으면 진행중이던 과제를 큐에 넣는다.
-// 과제를 진행한다.
-// 과제가 끝나면 큐에서 꺼낸다.
-
-vector<tuple<int, int, string>> v;
-stack<tuple<int, int, string>> stk;
-
-vector<string> solution(vector<vector<string>> plans)
+void InputParser(vector<vector<string>> &input, vector<tuple<int, int, string>> &plan)
 {
-	vector<string> answer;
-	for (int i = 0; i < plans.size(); i++)
+	for (int i = 0; i < input.size(); i++)
 	{
-		stringstream ss(plans[i][1]);
-		int hour;
-		int min;
-		char tmp;
-		ss >> hour;
-		ss >> tmp;
-		ss >> min;
-		v.push_back({hour * 100 + min, stoi(plans[i][2]), plans[i][0]});
+		stringstream ss(input[i][1]);
+		int st;
+		ss >> st;
+		st *= 60;
+		char c;
+		ss >> c;
+		int minute;
+		ss >> minute;
+		st += minute;
+		plan.push_back({st, stoi(input[i][2]), input[i][0]});
 	}
-	for (int i = 0; i < v.size(); i++)
+}
+
+vector<string> solution(vector<vector<string>> input)
+{
+	vector<tuple<int, int, string>> plan;
+	stack<pair<int, string>> stk;
+	vector<string> answer;
+
+	InputParser(input, plan);
+	int currTime = get<0>(plan[0]);
+
+	sort(plan.begin(), plan.end());
+	for (int i = 0; i < plan.size(); i++)
 	{
 		int st, en;
 		string name;
-		tie(st, en, name) = v[i];
-	}
-	int index = 0;
-	sort(v.begin(), v.end());
-	// for (int i = 0; i < v.size(); i++)
-	// {
-	//     int st,en;
-	//     string name;
-	//     tie(st, en, name) = v[i];
-	//     cout << st << ", " << en << ", " << name << endl;
-	// }
-	int curr_time = get<0>(*v.begin());
-	stk.push(v[0]);
-	while (1)
-	{
-		if (curr_time == 2400 || answer.size() == v.size())
-			break;
-		int st = -1, en = -1;
-		string name;
-		if (!stk.empty())
+		tie(st, en, name) = plan[i];
+		if (i + 1 == plan.size() || st + en <= get<0>(plan[i + 1]))
 		{
-			tie(st, en, name) = stk.top();
-		}
-		int end_time = st + en;
-		if (st != -1 && end_time % 100 >= 60)
-			end_time += 40;
-		// cout << "curr = " << curr_time << ", end = " << end_time << "\n";
-		if (curr_time >= end_time)
-		{
-			cout << name << endl;
-			if (!stk.empty())
-				stk.pop();
+			currTime = st + en;
 			answer.push_back(name);
 		}
-		cout << index << ", " << curr_time << ", " << get<0>(v[index + 1]) << endl;
-		if (index < v.size() && curr_time >= get<0>(v[index + 1]))
+		else
 		{
-			cout << "index = " << index << "\n";
-			index++;
-			if (index < v.size())
-				stk.push(v[index]);
+			currTime = get<0>(plan[i + 1]);
+			stk.push({(st + en) - get<0>(plan[i + 1]), name});
 		}
 
-		curr_time++;
-		if (curr_time % 100 >= 60)
-			curr_time += 40;
+		while (!stk.empty())
+		{
+			if (i + 1 != plan.size() && currTime >= get<0>(plan[i + 1]))
+				break;
+			int remainingTime = stk.top().first;
+			if (currTime + remainingTime <= get<0>(plan[i + 1]))
+			{
+				answer.push_back(stk.top().second);
+				currTime += remainingTime;
+				stk.pop();
+			}
+			else
+			{
+				stk.top().first -= get<0>(plan[i + 1]) - currTime;
+				currTime = get<0>(plan[i + 1]);
+				break;
+			}
+		}
 	}
-	// answer.erase(answer.end() - 1);
+	while (!stk.empty())
+	{
+		answer.push_back(stk.top().second);
+		stk.pop();
+	}
+
 	return answer;
 }
