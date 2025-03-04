@@ -1,0 +1,21 @@
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <sstream>
+
+using namespace std;
+
+string solution(string s)
+{
+    vector<int> v;
+    string answer = "";
+    stringstream ss(s);
+    int num;
+    while (ss >> num)
+        v.push_back(num);
+    sort(v.begin(), v.end());
+    answer = to_string(*v.begin());
+    answer += " " + to_string(*(--v.end()));
+    return answer;
+}
